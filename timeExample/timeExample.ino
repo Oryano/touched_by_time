@@ -6,11 +6,11 @@ RTC_DS3231 rtc;
 boolean intervalSession = true;
 
 //is const unsigned long correct?
-unsigned long wholeTime = 5000;      //5 = 300,000 minuts interval
+unsigned long wholeTime = 10000;      //5 = 300,000 minuts interval
 const int workingTime = 2000;     //2 seconds pattern happening
 unsigned long intervalTime = wholeTime - workingTime;
 
-int lastCheck = 0;
+unsigned long lastCheck = 0;
 int vibePin[8];   //number of pins connected
 
 unsigned long currentTime;          //from millis()
@@ -28,14 +28,13 @@ void setup() {
 #endif
 
   Serial.begin(9600);
-  delay(1000);    //wait for serial monitor to start
+  delay(3000);    //wait for serial monitor to start
 
   //RTC stuff-------------------------
   if (! rtc.begin()) {
     Serial.println("Couldn't find RTC");
     while (1);
   }
-
   if (rtc.lostPower()) {
     Serial.println("RTC lost power, lets set the time!");
     // following line sets the RTC to the date & time this sketch was compiled
@@ -52,26 +51,20 @@ void setup() {
     pinMode(i + 2, OUTPUT); //adjust numbers and makem OUTPUTS
     vibePin[i] = i + 2;     //match to pins
   }
-  currentTime = 0; //from millis()
+  currentTime = 0; //connected to millis()
 }
 
 
 void loop() {
-
-  //Serial.println( "-----------" );
   currentTime = millis();
 
   if (currentTime - lastCheck >= intervalTime) {
-    Serial.print(intervalSession);
     if (intervalSession == true) {
       intervalSession = false;
-      
       patternState = 1;
-      
       lastPatternCheck = currentTime;
       loadPattern(patternState);      //call function that takes the right pattern
     }
-    //problem miht be below if statment
     if (currentTime - lastCheck >= wholeTime) {
       intervalSession = true;
       lastCheck = currentTime;
@@ -79,19 +72,17 @@ void loop() {
   }
 
   if (intervalSession) {
-    //interval time!! turn vibe and LED off - Do nothing maybe ADD sleep?
+    //interval time!! turn vibe and LED off - Do nothing ADD sleep here !!!
     for (int i = 0; i < 8; i++) {
       digitalWrite(vibePin[i], LOW);
     }
     //Serial.println("----I----");
   }
-  else {
-    //pattern time 2 seconds
-
+  else {  //the 2 seconds in which to do pattern
+   
     if (currentTime - lastPatternCheck > 500) { //4 frames of pattern 500 ms each
-      patternState ++;  //position of digit to read
-      Serial.println("hi");
-      //loadPattern(patternState);
+      patternState ++;  //go to next position of digit to read
+      loadPattern(patternState);
       lastPatternCheck = currentTime;  //timestamp of last update
     }
 
@@ -106,6 +97,7 @@ void loadPattern( int clockDigit ) { //takes the digit from the c
   if (clockDigit == 1 ) {
     //show frame 1
     int smooth = floor((now.hour()) / 10); //find the first digit of hour
+    //is smooth the first digit ???
     //Serial.println(smooth);
     showPattern(smooth);
   }
@@ -116,50 +108,51 @@ void loadPattern( int clockDigit ) { //takes the digit from the c
   }
   else if (clockDigit == 3 ) {
     //show frame 3
-    int smooth = floor(now.minute() / 10); //find the first digit of hour
+    int smooth = floor((now.minute()) / 10); //find the third digit of minutes
     showPattern(smooth);
   }
   else if (clockDigit == 4 ) {
     //show frame 4
-    int leftOver = (now.minute()) % 10;  //find the second digit of hour
+    int leftOver = (now.minute()) % 10;  //find the fourth digit of minutes
     showPattern(leftOver);
+    Serial.println( "---finish last pattern---" );
   }
 }
 
 void showPattern( int content ) { //content is the location in the dictionary!!!
 
   Serial.println( "-----------" );
-  Serial.println( content );
+  //Serial.println( content );
 
   if (content == 0) {
-    Serial.println( "sequence for 0" );
+    Serial.println( "sequence for '0'" );
   }
   else if (content == 1) {
-    Serial.println( "sequence for 01" );
+    Serial.println( "sequence for '1'" );
   }
   else if (content == 2) {
-    Serial.println( "sequence for 02" );
+    Serial.println( "sequence for '2'" );
   }
   else if (content == 3) {
-    Serial.println( "sequence for 03" );
+    Serial.println( "sequence for '3'" );
   }
   else if (content == 4) {
-    Serial.println( "sequence for 04" );
+    Serial.println( "sequence for '4'" );
   }
   else if (content == 5) {
-    Serial.println( "sequence for 05" );
+    Serial.println( "sequence for '5'" );
   }
   else if (content == 6) {
-    Serial.println( "sequence for 06" );
+    Serial.println( "sequence for '6'" );
   }
   else if (content == 7) {
-    Serial.println( "sequence for 07" );
+    Serial.println( "sequence for '7'" );
   }
   else if (content == 8) {
-    Serial.println( "sequence for 08" );
+    Serial.println( "sequence for '8'" );
   }
   else if (content == 9) {
-    Serial.println( "sequence for 09" );
+    Serial.println( "sequence for '9'" );
   }
 }
 
