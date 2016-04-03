@@ -6,7 +6,7 @@ RTC_DS3231 rtc;
 boolean intervalSession = true;
 
 //is const unsigned long correct?
-unsigned long wholeTime = 10000;      //5 = 300,000 minuts interval
+unsigned long wholeTime = 5000;      //5 = 300,000 minuts interval
 const int workingTime = 2000;     //2 seconds pattern happening
 unsigned long intervalTime = wholeTime - workingTime;
 
@@ -73,13 +73,11 @@ void loop() {
 
   if (intervalSession) {
     //interval time!! turn vibe and LED off - Do nothing ADD sleep here !!!
-    for (int i = 0; i < 8; i++) {
-      digitalWrite(vibePin[i], LOW);
-    }
+    allOff();
     //Serial.println("----I----");
   }
   else {  //the 2 seconds in which to do pattern
-   
+
     if (currentTime - lastPatternCheck > 500) { //4 frames of pattern 500 ms each
       patternState ++;  //go to next position of digit to read
       loadPattern(patternState);
@@ -119,41 +117,74 @@ void loadPattern( int clockDigit ) { //takes the digit from the c
   }
 }
 
-void showPattern( int content ) { //content is the location in the dictionary!!!
+void showPattern( int digitContent ) { //digitContent is the digit in the clock
 
   Serial.println( "-----------" );
   //Serial.println( content );
 
-  if (content == 0) {
-    Serial.println( "sequence for '0'" );
+  if (digitContent == 0) {
+    Serial.println( "sequence when digit is '0'" ); //all HIGH
+    allOff(); //turn all other off first
+    //    for(int i = 0; i < sizeof(vibePin); i++){
+    //      digitalWrite(vibePin[i],HIGH);
+    //    }
+    digitalWrite(vibePin[0], HIGH);
   }
-  else if (content == 1) {
-    Serial.println( "sequence for '1'" );
+  else if (digitContent == 1) {
+    Serial.println( "sequence when digit is '1'" );
+    allOff(); //turn all other off first
+    digitalWrite(vibePin[1], HIGH);
   }
-  else if (content == 2) {
-    Serial.println( "sequence for '2'" );
+  else if (digitContent == 2) {
+    Serial.println( "sequence when digit is '2'" );
+    allOff(); //turn all other off first
+    //digitalWrite(vibePin[4], HIGH);
+    digitalWrite(vibePin[2], HIGH);
   }
-  else if (content == 3) {
-    Serial.println( "sequence for '3'" );
+  else if (digitContent == 3) {
+    Serial.println( "sequence when digit is '3'" );
+    allOff(); //turn all other off first
+    //digitalWrite(vibePin[2], HIGH);
+    digitalWrite(vibePin[3], HIGH);
   }
-  else if (content == 4) {
-    Serial.println( "sequence for '4'" );
+  else if (digitContent == 4) {
+    Serial.println( "sequence when digit is '4'" );
+    allOff(); //turn all other off first
+    digitalWrite(vibePin[4], HIGH);
+    //digitalWrite(vibePin[0], HIGH);
   }
-  else if (content == 5) {
-    Serial.println( "sequence for '5'" );
+  else if (digitContent == 5) {
+    Serial.println( "sequence when digit is '5'" );
+    allOff(); //turn all other off first
+    digitalWrite(vibePin[5], HIGH);
+    //digitalWrite(vibePin[8], HIGH);
   }
-  else if (content == 6) {
-    Serial.println( "sequence for '6'" );
+  else if (digitContent == 6) {
+    Serial.println( "sequence when digit is '6'" );
+    allOff(); //turn all other off first
+    digitalWrite(vibePin[6], HIGH);
   }
-  else if (content == 7) {
-    Serial.println( "sequence for '7'" );
+  else if (digitContent == 7) {
+    Serial.println( "sequence when digit is '7'" );
+    allOff(); //turn all other off first
+    digitalWrite(vibePin[7], HIGH);
   }
-  else if (content == 8) {
-    Serial.println( "sequence for '8'" );
+  else if (digitContent == 8) {
+    Serial.println( "sequence when digit is '8'" );
+    allOff(); //turn all other off first
+    digitalWrite(vibePin[8], HIGH);
   }
-  else if (content == 9) {
-    Serial.println( "sequence for '9'" );
+  else if (digitContent == 9) {
+    Serial.println( "sequence when digit is '9'" );
+    allOff(); //turn all other off first
+    digitalWrite(vibePin[1], HIGH);
   }
+}
+
+void allOff(){
+      for (int i = 0; i < sizeof(vibePin); i++) {
+      digitalWrite(vibePin[i], LOW);
+    }
 }
 
 
